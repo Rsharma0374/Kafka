@@ -1,0 +1,41 @@
+kafka:
+  topic:
+  urlCreated: url-shortener-topic
+
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: AUTH-SERVICE
+          uri: lb://AUTH-SERVICE
+          predicates:
+            - Path=/auth/**,/communications/**,/user/**,/api/**
+          filters:
+            - AuthenticationFilter
+
+        - id: EMAIL-SERVICE
+          uri: lb://EMAIL-SERVICE
+          predicates:
+            - Path=/email-connector/**
+          filters:
+            - AuthenticationFilter
+
+        - id: PASS-MANAGER-SERVICE
+          uri: lb://PASS-MANAGER-SERVICE
+          predicates:
+            - Path=/password-manager/**
+          filters:
+            - AuthenticationFilter
+
+        - id: URL-SHORT-SERVICE
+          uri: lb://URL-SHORT-SERVICE
+          predicates:
+            - Path=/url-service/**
+          filters:
+            - AuthenticationFilter
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      httpclient:
+        wiretap: true
