@@ -20,7 +20,7 @@ public class ProducerConfig {
 
     @Bean
     public NewTopic createTopic() {
-        return new NewTopic("${kafka.topic.urlCreated}", 2, (short) 1);
+        return new NewTopic("url-shortener-topic", 2, (short) 1);
     }
 
     @Bean
