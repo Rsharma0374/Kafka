@@ -1,13 +1,15 @@
 package com.guardianservices.kafka.services;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.guardianservices.kafka.client.EMailClient;
 import com.guardianservices.kafka.request.EmailRequest;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
 
 @Service
 public class KafkaConsumerService {
@@ -21,11 +23,18 @@ public class KafkaConsumerService {
 
         try {
             // Parse the message
-            JSONObject jsonObject = new JSONObject(message);
-            String longUrl = jsonObject.getString("longUrl");
-            String shortUrl = jsonObject.getString("shortUrl");
-            String email = jsonObject.getString("email");
-            String expiry = jsonObject.getString("validation");
+            ObjectMapper mapper = new ObjectMapper();
+            // Unescape if needed
+            if (message.startsWith("\"") && message.endsWith("\"")) {
+                message = message.substring(1, message.length() - 1).replace("\\\"", "\"");
+            }
+
+            HashMap<String, Object> map = mapper.readValue(message, HashMap.class);
+            String longUrl = (String) map.get("longUrl");
+            String shortUrl = (String) map.get("shortUrl");
+            String email = (String) map.get("email");
+            String expiry = (String) map.get("validation");
+
             logger.info("Message received in Listener 1: longUrl : {}, shortUrl: {}, expiry {}", longUrl, shortUrl, expiry);
 
             sendEmail(longUrl, shortUrl, expiry, email);
@@ -40,11 +49,18 @@ public class KafkaConsumerService {
 
         try {
             // Parse the message
-            JSONObject jsonObject = new JSONObject(message);
-            String longUrl = jsonObject.getString("longUrl");
-            String shortUrl = jsonObject.getString("shortUrl");
-            String email = jsonObject.getString("email");
-            String expiry = jsonObject.getString("validation");
+            ObjectMapper mapper = new ObjectMapper();
+            // Unescape if needed
+            if (message.startsWith("\"") && message.endsWith("\"")) {
+                message = message.substring(1, message.length() - 1).replace("\\\"", "\"");
+            }
+
+            HashMap<String, Object> map = mapper.readValue(message, HashMap.class);
+
+            String longUrl = (String) map.get("longUrl");
+            String shortUrl = (String) map.get("shortUrl");
+            String email = (String) map.get("email");
+            String expiry = (String) map.get("validation");
             logger.info("Message received in Listener 2: longUrl : {}, shortUrl: {}, expiry {}", longUrl, shortUrl, expiry);
             sendEmail(longUrl, shortUrl, expiry, email);
 
