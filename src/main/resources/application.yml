@@ -1,7 +1,6 @@
 kafka:
   topic:
   urlCreated: url-shortener-topic
-
 spring:
   cloud:
     gateway:
@@ -39,3 +38,5 @@ spring:
           lower-case-service-id: true
       httpclient:
         wiretap: true
+server:
+  port: 10010
